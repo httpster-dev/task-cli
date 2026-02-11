@@ -1,5 +1,5 @@
 # Task Manager CLI
-A simple task manager CLI written in Go.
+A simple task manager CLI written in Go. 100% testable.
 
 ## Phase 1: In-Memory Domain Logic
 

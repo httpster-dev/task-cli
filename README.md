@@ -1,6 +1,3 @@
-AHA! I've pushed to main!
-
-
 # Task Manager CLI
 ## Phase 1: In-Memory Domain Logic
 

@@ -1,4 +1,6 @@
 # Task Manager CLI
+A simple task manager CLI written in Go.
+
 ## Phase 1: In-Memory Domain Logic
 
 **Go concepts**: structs, `iota` enums, interfaces, pointer receivers, slices, sentinel errors, `time.Time`

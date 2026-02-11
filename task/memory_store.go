@@ -28,6 +28,28 @@ func (s *InMemoryTaskStore) Add(title string) (Task, error) {
 	return t, nil
 }
 
+func (s *InMemoryTaskStore) Complete(id int) error {
+	for index, t := range s.tasks {
+		if t.ID == id {
+			s.tasks[index].Status = StatusDone
+			now := time.Now()
+			s.tasks[index].CompletedAt = &now
+			return nil
+		}
+	}
+	return ErrTaskNotFound
+}
+
+func (s *InMemoryTaskStore) Delete(id int) error {
+	for index, t := range s.tasks {
+		if t.ID == id {
+			s.tasks = append(s.tasks[:index], s.tasks[index+1:]...)
+			return nil
+		}
+	}
+	return ErrTaskNotFound
+}
+
 func (s *InMemoryTaskStore) List() ([]Task, error) {
 	return s.tasks, nil
 }

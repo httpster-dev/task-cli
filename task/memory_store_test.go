@@ -82,3 +82,31 @@ func TestInMemoryStore_CompleteNotFound(t *testing.T) {
 		t.Errorf("got error %v, want ErrTaskNotFound", err)
 	}
 }
+
+func TestInMemoryStore_Delete(t *testing.T) {
+	store := task.NewInMemoryTaskStore()
+	store.Add("Buy groceries")
+	store.Add("Walk the dog")
+
+	err := store.Delete(1)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	tasks, _ := store.List()
+	if len(tasks) != 1 {
+		t.Fatalf("got %d tasks after delete, want 1", len(tasks))
+	}
+	if tasks[0].ID != 2 {
+		t.Errorf("remaining task ID: got %d, want 2", tasks[0].ID)
+	}
+}
+
+func TestInMemoryStore_DeleteNotFound(t *testing.T) {
+	store := task.NewInMemoryTaskStore()
+
+	err := store.Delete(999)
+	if !errors.Is(err, task.ErrTaskNotFound) {
+		t.Errorf("got error %v, want ErrTaskNotFound", err)
+	}
+}

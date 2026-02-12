@@ -17,24 +17,12 @@ func TestTaskCreation(t *testing.T) {
 		CreatedAt: now,
 	}
 
-	if tk.ID != 1 {
-		t.Errorf("got ID %d, want 1", tk.ID)
-	}
-	if tk.Title != "Buy groceries" {
-		t.Errorf("got Title %q, want %q", tk.Title, "Buy groceries")
-	}
-	if tk.Status != task.StatusTodo {
-		t.Errorf("got Status %d, want StatusTodo", tk.Status)
-	}
-	if tk.Priority != task.PriorityMedium {
-		t.Errorf("got Priority %d, want PriorityMedium", tk.Priority)
-	}
-	if tk.CreatedAt != now {
-		t.Errorf("got CreatedAt %v, want %v", tk.CreatedAt, now)
-	}
-	if tk.CompletedAt != nil {
-		t.Error("expected CompletedAt to be nil for a new task")
-	}
+	assertEqual(t, tk.ID, 1)
+	assertEqual(t, tk.Title, "Buy groceries")
+	assertEqual(t, tk.Status, task.StatusTodo)
+	assertEqual(t, tk.Priority, task.PriorityMedium)
+	assertEqual(t, tk.CreatedAt, now)
+	assertEqual(t, tk.CompletedAt, nil)
 }
 
 func TestStatusString(t *testing.T) {
@@ -48,9 +36,7 @@ func TestStatusString(t *testing.T) {
 
 	for _, tt := range tests {
 		got := tt.status.String()
-		if got != tt.want {
-			t.Errorf("got %q, want %q", got, tt.want)
-		}
+		assertEqual(t, got, tt.want)
 	}
 }
 
@@ -66,8 +52,6 @@ func TestPriorityString(t *testing.T) {
 
 	for _, tt := range tests {
 		got := tt.priority.String()
-		if got != tt.want {
-			t.Errorf("got %q, want %q", got, tt.want)
-		}
+		assertEqual(t, got, tt.want)
 	}
 }

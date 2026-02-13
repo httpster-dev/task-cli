@@ -2,6 +2,17 @@ package task
 
 import "time"
 
+// Task is the core domain struct — like an AR model but with explicit fields.
+// CompletedAt is a pointer so it can be nil (Go's way of expressing "optional").
+type Task struct {
+	ID          int
+	Title       string
+	Status      Status
+	Priority    Priority
+	CreatedAt   time.Time
+	CompletedAt *time.Time
+}
+
 // Status represents the state of a task — like an enum in Rails.
 // Go uses iota to auto-increment integer constants within a const block.
 type Status int
@@ -38,15 +49,4 @@ func (p Priority) String() string {
 	default:
 		return "low"
 	}
-}
-
-// Task is the core domain struct — like an AR model but with explicit fields.
-// CompletedAt is a pointer so it can be nil (Go's way of expressing "optional").
-type Task struct {
-	ID          int
-	Title       string
-	Status      Status
-	Priority    Priority
-	CreatedAt   time.Time
-	CompletedAt *time.Time
 }

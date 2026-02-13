@@ -28,6 +28,10 @@ func (s *InMemoryTaskStore) Add(title string) (Task, error) {
 	return t, nil
 }
 
+func (s *InMemoryTaskStore) List() ([]Task, error) {
+	return s.tasks, nil
+}
+
 func (s *InMemoryTaskStore) Complete(id int) error {
 	for index, t := range s.tasks {
 		if t.ID == id {
@@ -48,8 +52,4 @@ func (s *InMemoryTaskStore) Delete(id int) error {
 		}
 	}
 	return ErrTaskNotFound
-}
-
-func (s *InMemoryTaskStore) List() ([]Task, error) {
-	return s.tasks, nil
 }

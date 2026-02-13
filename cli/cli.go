@@ -20,19 +20,24 @@ func NewCLI(s task.TaskStore, b io.Writer) *CLI {
 }
 
 func (c *CLI) Run(s []string) error {
-	if len(s) < 2 {
-		return fmt.Errorf("missing task title")
+	if len(s) == 0 {
+		return fmt.Errorf("usage: task <command> [args]")
 	}
-	taskCommand := string(s[0])
-	taskTitle := string(s[1])
+	taskCommand := s[0]
 
 	switch taskCommand {
 	case "add":
-		_, err := c.store.Add(taskTitle)
+		if len(s) < 2 {
+			return fmt.Errorf("missing task title")
+		}
+		taskTitle := s[1]
+		t, err := c.store.Add(taskTitle)
 		if err != nil {
 			return err
 		}
-		fmt.Fprint(c.out, "Added task 1\n")
+		fmt.Fprintf(c.out, "Added task %d\n", t.ID)
+	default:
+		return fmt.Errorf("unknown command %q", taskCommand)
 	}
 	return nil
 }

@@ -12,10 +12,10 @@ type CLI struct {
 	out   io.Writer
 }
 
-func NewCLI(s task.TaskStore, b io.Writer) *CLI {
+func NewCLI(store task.TaskStore, out io.Writer) *CLI {
 	return &CLI{
-		store: s,
-		out:   b,
+		store: store,
+		out:   out,
 	}
 }
 
@@ -36,6 +36,13 @@ func (c *CLI) Run(s []string) error {
 			return err
 		}
 		fmt.Fprintf(c.out, "Added task %d\n", t.ID)
+	case "list":
+		tasks, err := c.store.List()
+		if err != nil {
+			return err
+		}
+		output := FormatTaskTable(tasks)
+		fmt.Fprint(c.out, output)
 	default:
 		return fmt.Errorf("unknown command %q", taskCommand)
 	}

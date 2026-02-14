@@ -12,10 +12,10 @@ type CLI struct {
 	out   io.Writer
 }
 
-func NewCLI(s task.TaskStore, b io.Writer) *CLI {
+func NewCLI(store task.TaskStore, out io.Writer) *CLI {
 	return &CLI{
-		store: s,
-		out:   b,
+		store: store,
+		out:   out,
 	}
 }
 

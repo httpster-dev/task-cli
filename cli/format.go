@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/tomhockett/task-cli/task"
 )
@@ -10,14 +11,9 @@ func FormatTaskTable(tasks []task.Task) string {
 	if len(tasks) == 0 {
 		return "No tasks\n"
 	}
-	var result string
-
+	var sb strings.Builder
 	for _, t := range tasks {
-		result += fmt.Sprintf("%d, %s, %s\n",
-			t.ID,
-			t.Title,
-			t.Status)
+		fmt.Fprintf(&sb, "%d, %s, %s\n", t.ID, t.Title, t.Status)
 	}
-
-	return result
+	return sb.String()
 }

@@ -80,6 +80,52 @@ func TestCLI_List_Empty(t *testing.T) {
 	}
 }
 
+func TestCLI_Done(t *testing.T) {
+	store := task.NewInMemoryTaskStore()
+	buf := &bytes.Buffer{}
+	c := cli.NewCLI(store, buf)
+
+	c.Run([]string{"add", "Buy groceries"})
+
+	err := c.Run([]string{"done", "1"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	// Verify state directly via the store
+	tasks, _ := store.List()
+	if tasks[0].Status != task.StatusDone {
+		t.Errorf("got status %v, want StatusDone", tasks[0].Status)
+	}
+}
+
+func TestCLI_Done_InvalidID(t *testing.T) {
+	c, _ := newTestCLI()
+
+	err := c.Run([]string{"done", "abc"})
+	if err == nil {
+		t.Fatal("expected an error for non-numeric ID but got nil")
+	}
+}
+
+func TestCLI_Done_NotFound(t *testing.T) {
+	c, _ := newTestCLI()
+
+	err := c.Run([]string{"done", "999"})
+	if err == nil {
+		t.Fatal("expected an error for missing task but got nil")
+	}
+}
+
+func TestCLI_Done_MissingID(t *testing.T) {
+	c, _ := newTestCLI()
+
+	err := c.Run([]string{"done"})
+	if err == nil {
+		t.Fatal("expected an error when no ID provided but got nil")
+	}
+}
+
 // contains is a small helper to avoid importing strings in the test file.
 func contains(s, substr string) bool {
 	return len(s) >= len(substr) && (s == substr || len(s) > 0 && containsAt(s, substr))

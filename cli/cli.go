@@ -3,6 +3,7 @@ package cli
 import (
 	"fmt"
 	"io"
+	"strconv"
 
 	"github.com/tomhockett/task-cli/task"
 )
@@ -43,6 +44,18 @@ func (c *CLI) Run(s []string) error {
 		}
 		output := FormatTaskTable(tasks)
 		fmt.Fprint(c.out, output)
+	case "done":
+		if len(s) < 2 {
+			return fmt.Errorf("missing task ID")
+		}
+		taskID, err := strconv.Atoi(s[1])
+		if err != nil {
+			return fmt.Errorf("invalid task ID: %q", s[1])
+		}
+		err = c.store.Complete(taskID)
+		if err != nil {
+			return err
+		}
 	default:
 		return fmt.Errorf("unknown command %q", taskCommand)
 	}

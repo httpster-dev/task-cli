@@ -171,6 +171,24 @@ func TestCLI_Delete_MissingID(t *testing.T) {
 	}
 }
 
+func TestCLI_NoArgs(t *testing.T) {
+	c, _ := newTestCLI()
+
+	err := c.Run([]string{})
+	if err == nil {
+		t.Fatal("expected an error for no args but got nil")
+	}
+}
+
+func TestCLI_UnknownCommand(t *testing.T) {
+	c, _ := newTestCLI()
+
+	err := c.Run([]string{"frobnicate"})
+	if err == nil {
+		t.Fatal("expected an error for unknown command but got nil")
+	}
+}
+
 // contains is a small helper to avoid importing strings in the test file.
 func contains(s, substr string) bool {
 	return len(s) >= len(substr) && (s == substr || len(s) > 0 && containsAt(s, substr))

@@ -126,6 +126,51 @@ func TestCLI_Done_MissingID(t *testing.T) {
 	}
 }
 
+func TestCLI_Delete(t *testing.T) {
+	store := task.NewInMemoryTaskStore()
+	buf := &bytes.Buffer{}
+	c := cli.NewCLI(store, buf)
+
+	c.Run([]string{"add", "Buy groceries"})
+
+	err := c.Run([]string{"delete", "1"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	tasks, _ := store.List()
+	if len(tasks) != 0 {
+		t.Errorf("got %d tasks after delete, want 0", len(tasks))
+	}
+}
+
+func TestCLI_Delete_InvalidID(t *testing.T) {
+	c, _ := newTestCLI()
+
+	err := c.Run([]string{"delete", "abc"})
+	if err == nil {
+		t.Fatal("expected an error for non-numeric ID but got nil")
+	}
+}
+
+func TestCLI_Delete_NotFound(t *testing.T) {
+	c, _ := newTestCLI()
+
+	err := c.Run([]string{"delete", "999"})
+	if err == nil {
+		t.Fatal("expected an error for missing task but got nil")
+	}
+}
+
+func TestCLI_Delete_MissingID(t *testing.T) {
+	c, _ := newTestCLI()
+
+	err := c.Run([]string{"delete"})
+	if err == nil {
+		t.Fatal("expected an error when no ID provided but got nil")
+	}
+}
+
 // contains is a small helper to avoid importing strings in the test file.
 func contains(s, substr string) bool {
 	return len(s) >= len(substr) && (s == substr || len(s) > 0 && containsAt(s, substr))

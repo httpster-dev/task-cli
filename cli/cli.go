@@ -48,11 +48,17 @@ func (c *CLI) Run(s []string) error {
 		if len(s) < 2 {
 			return fmt.Errorf("missing task ID")
 		}
-		taskID, err := strconv.Atoi(s[1])
+		id, err := c.parseID(s[1])
+		err = c.store.Complete(id)
 		if err != nil {
-			return fmt.Errorf("invalid task ID: %q", s[1])
+			return err
 		}
-		err = c.store.Complete(taskID)
+	case "delete":
+		if len(s) < 2 {
+			return fmt.Errorf("missing task ID")
+		}
+		id, err := c.parseID(s[1])
+		err = c.store.Delete(id)
 		if err != nil {
 			return err
 		}
@@ -60,4 +66,12 @@ func (c *CLI) Run(s []string) error {
 		return fmt.Errorf("unknown command %q", taskCommand)
 	}
 	return nil
+}
+
+func (c *CLI) parseID(s string) (int, error) {
+	id, err := strconv.Atoi(s)
+	if err != nil {
+		return 0, fmt.Errorf("invalid task ID: %q", s)
+	}
+	return id, nil
 }

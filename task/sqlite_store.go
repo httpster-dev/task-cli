@@ -11,6 +11,10 @@ type SQLiteStore struct {
 	db *sql.DB
 }
 
+// Compile-time check that SQLiteStore implements TaskStore.
+// If SQLiteStore is missing any interface methods, this line will fail to compile.
+var _ TaskStore = (*SQLiteStore)(nil)
+
 func NewSQLiteStore(path string) (*SQLiteStore, error) {
 	db, err := sql.Open("sqlite", path)
 	if err != nil {

@@ -9,6 +9,10 @@ type InMemoryTaskStore struct {
 	nextID int
 }
 
+// Compile-time check that InMemoryTaskStore implements TaskStore.
+// If InMemoryTaskStore is missing any interface methods, this line will fail to compile.
+var _ TaskStore = (*InMemoryTaskStore)(nil)
+
 // NewInMemoryTaskStore is a constructor function — Go's version of .new.
 // Returns a pointer so all method calls share the same data.
 func NewInMemoryTaskStore() *InMemoryTaskStore {

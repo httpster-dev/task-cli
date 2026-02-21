@@ -3,14 +3,16 @@ package task_test
 import (
 	"path/filepath"
 	"testing"
+
+	"github.com/tomhockett/task-cli/task"
 )
 
 // newTestStore creates a SQLiteStore backed by a temporary file.
 // t.TempDir() is automatically cleaned up after the test — like DatabaseCleaner in Rails.
-func newTestStore(t *testing.T) *SQLiteStore {
+func newTestStore(t *testing.T) *task.SQLiteStore {
 	t.Helper()
 	path := filepath.Join(t.TempDir(), "test.db")
-	store, err := NewSQLiteStore(path)
+	store, err := task.NewSQLiteStore(path)
 	if err != nil {
 		t.Fatalf("failed to create SQLiteStore: %v", err)
 	}
@@ -27,18 +29,18 @@ func TestSQLiteStore_Open(t *testing.T) {
 func TestSQLiteStore_Add(t *testing.T) {
 	store := newTestStore(t)
 
-	task, err := store.Add("Buy groceries")
+	tsk, err := store.Add("Buy groceries")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if task.ID != 1 {
-		t.Errorf("got ID %d, want 1", task.ID)
+	if tsk.ID != 1 {
+		t.Errorf("got ID %d, want 1", tsk.ID)
 	}
-	if task.Title != "Buy groceries" {
-		t.Errorf("got title %q, want %q", task.Title, "Buy groceries")
+	if tsk.Title != "Buy groceries" {
+		t.Errorf("got title %q, want %q", tsk.Title, "Buy groceries")
 	}
-	if task.Status != StatusTodo {
-		t.Errorf("got status %v, want StatusTodo", task.Status)
+	if tsk.Status != task.StatusTodo {
+		t.Errorf("got status %v, want StatusTodo", tsk.Status)
 	}
 }
 

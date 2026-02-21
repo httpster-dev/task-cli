@@ -32,7 +32,6 @@ func NewSQLiteStore(path string) (*SQLiteStore, error) {
 
 func (s *SQLiteStore) Add(title string) (Task, error) {
 	now := time.Now()
-	// INSERT the task into the database
 	result, err := s.db.Exec("INSERT INTO tasks (title, status, priority, created_at) VALUES (?, ?, ?, ?)", title, StatusTodo, PriorityMedium, now)
 	if err != nil {
 		return Task{}, err
@@ -42,7 +41,6 @@ func (s *SQLiteStore) Add(title string) (Task, error) {
 		return Task{}, err
 	}
 
-	// Build and return the Task struct
 	t := Task{
 		ID:        int(id), // from LastInsertId()
 		Title:     title,
@@ -51,6 +49,36 @@ func (s *SQLiteStore) Add(title string) (Task, error) {
 		CreatedAt: now,
 	}
 	return t, nil
+}
+
+func (s *SQLiteStore) Complete(id int) error {
+	result, err := s.db.Exec("UPDATE tasks SET status = ?, completed_at = ? WHERE id = ?", StatusDone, time.Now(), id)
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return ErrTaskNotFound
+	}
+	return nil
+}
+
+func (s *SQLiteStore) Delete(id int) error {
+	result, err := s.db.Exec("DELETE FROM tasks WHERE id = ?", id)
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return ErrTaskNotFound
+	}
+	return nil
 }
 
 func (s *SQLiteStore) List() ([]Task, error) {

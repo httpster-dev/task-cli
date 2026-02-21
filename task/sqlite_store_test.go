@@ -64,3 +64,58 @@ func TestSQLiteStore_List(t *testing.T) {
 		t.Errorf("got title %q, want %q", tasks[1].Title, "Walk the dog")
 	}
 }
+
+func TestSQLiteStore_Complete(t *testing.T) {
+	store := newTestStore(t)
+	store.Add("Buy groceries")
+
+	err := store.Complete(1)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	tasks, _ := store.List()
+	if tasks[0].Status != task.StatusDone {
+		t.Errorf("got status %v, want StatusDone", tasks[0].Status)
+	}
+	if tasks[0].CompletedAt == nil {
+		t.Error("expected CompletedAt to be set after completing")
+	}
+}
+
+func TestSQLiteStore_Complete_NotFound(t *testing.T) {
+	store := newTestStore(t)
+
+	err := store.Complete(999)
+	if err != task.ErrTaskNotFound {
+		t.Errorf("got error %v, want ErrTaskNotFound", err)
+	}
+}
+
+func TestSQLiteStore_Delete(t *testing.T) {
+	store := newTestStore(t)
+	store.Add("Buy groceries")
+	store.Add("Walk the dog")
+
+	err := store.Delete(1)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	tasks, _ := store.List()
+	if len(tasks) != 1 {
+		t.Fatalf("got %d tasks after delete, want 1", len(tasks))
+	}
+	if tasks[0].ID != 2 {
+		t.Errorf("remaining task ID: got %d, want 2", tasks[0].ID)
+	}
+}
+
+func TestSQLiteStore_Delete_NotFound(t *testing.T) {
+	store := newTestStore(t)
+
+	err := store.Delete(999)
+	if err != task.ErrTaskNotFound {
+		t.Errorf("got error %v, want ErrTaskNotFound", err)
+	}
+}

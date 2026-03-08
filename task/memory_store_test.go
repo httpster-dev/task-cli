@@ -10,14 +10,14 @@ func TestInMemoryStore_AddAndList(t *testing.T) {
 	store := task.NewInMemoryTaskStore()
 
 	// Add first task
-	t1, err := store.Add("Buy groceries")
+	t1, err := store.Add("Buy groceries", task.AddOptions{})
 	assertNoError(t, err)
 	assertEqual(t, t1.ID, 1)
 	assertEqual(t, t1.Title, "Buy groceries")
 	assertEqual(t, t1.Status, task.StatusTodo)
 
 	// Add second task — ID auto-increments
-	t2, err := store.Add("Walk the dog")
+	t2, err := store.Add("Walk the dog", task.AddOptions{})
 	assertNoError(t, err)
 	assertEqual(t, t2.ID, 2)
 	assertEqual(t, t2.Title, "Walk the dog")
@@ -38,7 +38,7 @@ func TestInMemoryStore_ListEmpty(t *testing.T) {
 
 func TestInMemoryStore_Complete(t *testing.T) {
 	store := task.NewInMemoryTaskStore()
-	store.Add("Buy groceries")
+	store.Add("Buy groceries", task.AddOptions{})
 
 	err := store.Complete(1)
 	assertNoError(t, err)
@@ -59,8 +59,8 @@ func TestInMemoryStore_CompleteNotFound(t *testing.T) {
 
 func TestInMemoryStore_Delete(t *testing.T) {
 	store := task.NewInMemoryTaskStore()
-	store.Add("Buy groceries")
-	store.Add("Walk the dog")
+	store.Add("Buy groceries", task.AddOptions{})
+	store.Add("Walk the dog", task.AddOptions{})
 
 	err := store.Delete(1)
 	assertNoError(t, err)

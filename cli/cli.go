@@ -32,7 +32,7 @@ func (c *CLI) Run(s []string) error {
 			return fmt.Errorf("missing task title")
 		}
 		taskTitle := s[1]
-		t, err := c.store.Add(taskTitle)
+		t, err := c.store.Add(taskTitle, task.AddOptions{})
 		if err != nil {
 			return err
 		}

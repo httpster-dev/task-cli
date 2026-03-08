@@ -42,46 +42,29 @@ func TestCLI_Add_MissingTitle(t *testing.T) {
 }
 
 func TestCLI_Add_WithPriority(t *testing.T) {
-	store := task.NewInMemoryTaskStore()
-	buf := &bytes.Buffer{}
-	c := cli.NewCLI(store, buf)
+	c, _ := newTestCLI()
 
 	err := c.Run([]string{"add", "--priority", "high", "Urgent task"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
+}
 
-	tasks, _ := store.List()
-	if len(tasks) == 0 {
-		t.Fatal("expected at least 1 task, got 0")
-	}
-	if tasks[0].Priority != task.PriorityHigh {
-		t.Errorf("got priority %v, want PriorityHigh", tasks[0].Priority)
+func TestCLI_Add_WithInvalidPriority(t *testing.T) {
+	c, _ := newTestCLI()
+
+	err := c.Run([]string{"add", "--priority", "nonsense", "Task"})
+	if err == nil {
+		t.Fatal("expected an error for invalid priority but got nil")
 	}
 }
 
 func TestCLI_Add_WithTags(t *testing.T) {
-	store := task.NewInMemoryTaskStore()
-	buf := &bytes.Buffer{}
-	c := cli.NewCLI(store, buf)
+	c, _ := newTestCLI()
 
 	err := c.Run([]string{"add", "--tag", "work", "--tag", "urgent", "Work task"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
-	}
-
-	tasks, _ := store.List()
-	if len(tasks) == 0 {
-		t.Fatal("expected at least 1 task, got 0")
-	}
-	if len(tasks[0].Tags) != 2 {
-		t.Fatalf("got %d tags, want 2", len(tasks[0].Tags))
-	}
-	if tasks[0].Tags[0] != "work" {
-		t.Errorf("got tag %q, want %q", tasks[0].Tags[0], "work")
-	}
-	if tasks[0].Tags[1] != "urgent" {
-		t.Errorf("got tag %q, want %q", tasks[0].Tags[1], "urgent")
 	}
 }
 

@@ -1,6 +1,8 @@
 package task
 
-import "time"
+import (
+	"time"
+)
 
 // InMemoryTaskStore holds tasks in a slice — great for testing, no I/O needed.
 // Like using a plain Ruby array instead of hitting the database.
@@ -19,12 +21,19 @@ func NewInMemoryTaskStore() *InMemoryTaskStore {
 	return &InMemoryTaskStore{nextID: 1}
 }
 
-func (s *InMemoryTaskStore) Add(title string) (Task, error) {
+func (s *InMemoryTaskStore) Add(title string, opts AddOptions) (Task, error) {
+	var priority Priority
+	if opts.Priority != nil {
+		priority = *opts.Priority
+	} else {
+		priority = PriorityMedium
+	}
 	t := Task{
 		ID:        s.nextID,
 		Title:     title,
 		Status:    StatusTodo,
-		Priority:  PriorityMedium,
+		Priority:  priority,
+		Tags:      opts.Tags,
 		CreatedAt: time.Now(),
 	}
 	s.tasks = append(s.tasks, t)

@@ -11,7 +11,7 @@ var ErrTaskNotFound = errors.New("task not found")
 // In Rails terms, this is the contract that ActiveRecord provides implicitly.
 // In Go, you define it explicitly so you can swap implementations.
 type TaskStore interface {
-	Add(title string) (Task, error)
+	Add(title string, opts AddOptions) (Task, error)
 	List() ([]Task, error)
 	Complete(id int) error
 	Delete(id int) error

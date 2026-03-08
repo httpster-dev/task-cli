@@ -9,6 +9,7 @@ type Task struct {
 	Title       string
 	Status      Status
 	Priority    Priority
+	Tags        []string
 	CreatedAt   time.Time
 	CompletedAt *time.Time
 }

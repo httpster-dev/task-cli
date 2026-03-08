@@ -29,7 +29,7 @@ func TestSQLiteStore_Open(t *testing.T) {
 func TestSQLiteStore_Add(t *testing.T) {
 	store := newTestStore(t)
 
-	tsk, err := store.Add("Buy groceries")
+	tsk, err := store.Add("Buy groceries", task.AddOptions{})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -47,8 +47,8 @@ func TestSQLiteStore_Add(t *testing.T) {
 func TestSQLiteStore_List(t *testing.T) {
 	store := newTestStore(t)
 
-	store.Add("Buy groceries")
-	store.Add("Walk the dog")
+	store.Add("Buy groceries", task.AddOptions{})
+	store.Add("Walk the dog", task.AddOptions{})
 
 	tasks, err := store.List()
 	if err != nil {
@@ -67,7 +67,7 @@ func TestSQLiteStore_List(t *testing.T) {
 
 func TestSQLiteStore_Complete(t *testing.T) {
 	store := newTestStore(t)
-	store.Add("Buy groceries")
+	store.Add("Buy groceries", task.AddOptions{})
 
 	err := store.Complete(1)
 	if err != nil {
@@ -94,8 +94,8 @@ func TestSQLiteStore_Complete_NotFound(t *testing.T) {
 
 func TestSQLiteStore_Delete(t *testing.T) {
 	store := newTestStore(t)
-	store.Add("Buy groceries")
-	store.Add("Walk the dog")
+	store.Add("Buy groceries", task.AddOptions{})
+	store.Add("Walk the dog", task.AddOptions{})
 
 	err := store.Delete(1)
 	if err != nil {

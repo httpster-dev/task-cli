@@ -41,6 +41,33 @@ func TestCLI_Add_MissingTitle(t *testing.T) {
 	}
 }
 
+func TestCLI_Add_WithPriority(t *testing.T) {
+	c, _ := newTestCLI()
+
+	err := c.Run([]string{"add", "--priority", "high", "Urgent task"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+func TestCLI_Add_WithInvalidPriority(t *testing.T) {
+	c, _ := newTestCLI()
+
+	err := c.Run([]string{"add", "--priority", "nonsense", "Task"})
+	if err == nil {
+		t.Fatal("expected an error for invalid priority but got nil")
+	}
+}
+
+func TestCLI_Add_WithTags(t *testing.T) {
+	c, _ := newTestCLI()
+
+	err := c.Run([]string{"add", "--tag", "work", "--tag", "urgent", "Work task"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
 func TestCLI_List(t *testing.T) {
 	c, buf := newTestCLI()
 

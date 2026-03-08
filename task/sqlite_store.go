@@ -31,7 +31,17 @@ func NewSQLiteStore(path string) (*SQLiteStore, error) {
     							completed_at DATETIME
 					)`)
 	if err != nil {
+		db.Close()
 		return nil, err
+	}
+	// Lightweight migration: ensure the "tags" column exists on existing databases.
+	// If the column already exists, SQLite will return a "duplicate column name" error,
+	// which we safely ignore.
+	if _, err := db.Exec(`ALTER TABLE tasks ADD COLUMN tags TEXT DEFAULT ''`); err != nil {
+		if !strings.Contains(err.Error(), "duplicate column name") {
+			db.Close()
+			return nil, err
+		}
 	}
 	return &SQLiteStore{db: db}, nil
 }

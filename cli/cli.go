@@ -1,9 +1,11 @@
 package cli
 
 import (
+	"flag"
 	"fmt"
 	"io"
 	"strconv"
+	"strings"
 
 	"github.com/tomhockett/task-cli/task"
 )
@@ -28,11 +30,35 @@ func (c *CLI) Run(s []string) error {
 
 	switch taskCommand {
 	case "add":
-		if len(s) < 2 {
+		addFlags := flag.NewFlagSet("add", flag.ContinueOnError)
+		priority := addFlags.String("priority", "medium", "Priority: low, medium, high")
+		var tags []string
+		addFlags.Func("tag", "Add a tag (repeatable)", func(s string) error {
+			tags = append(tags, s)
+			return nil
+		})
+
+		// Parse flags
+		if err := addFlags.Parse(s[1:]); err != nil {
+			return err
+		}
+
+		// Remaining args after flags are the title
+		args := addFlags.Args()
+		if len(args) == 0 {
 			return fmt.Errorf("missing task title")
 		}
-		taskTitle := s[1]
-		t, err := c.store.Add(taskTitle, task.AddOptions{})
+		title := strings.Join(args, " ") // join multi-word titles
+		taskPriority, err := c.parsePriority(*priority)
+		if err != nil {
+			return err
+		}
+
+		opts := task.AddOptions{
+			Tags:     tags,
+			Priority: &taskPriority,
+		}
+		t, err := c.store.Add(title, opts)
 		if err != nil {
 			return err
 		}
@@ -49,6 +75,9 @@ func (c *CLI) Run(s []string) error {
 			return fmt.Errorf("missing task ID")
 		}
 		id, err := c.parseID(s[1])
+		if err != nil {
+			return err
+		}
 		err = c.store.Complete(id)
 		if err != nil {
 			return err
@@ -58,6 +87,9 @@ func (c *CLI) Run(s []string) error {
 			return fmt.Errorf("missing task ID")
 		}
 		id, err := c.parseID(s[1])
+		if err != nil {
+			return err
+		}
 		err = c.store.Delete(id)
 		if err != nil {
 			return err
@@ -74,4 +106,17 @@ func (c *CLI) parseID(s string) (int, error) {
 		return 0, fmt.Errorf("invalid task ID: %q", s)
 	}
 	return id, nil
+}
+
+func (c *CLI) parsePriority(s string) (task.Priority, error) {
+	switch s {
+	case "low":
+		return task.PriorityLow, nil
+	case "medium":
+		return task.PriorityMedium, nil
+	case "high":
+		return task.PriorityHigh, nil
+	default:
+		return 0, fmt.Errorf("invalid priority: %q", s)
+	}
 }

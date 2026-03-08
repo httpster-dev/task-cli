@@ -109,7 +109,7 @@ func (s *SQLiteStore) Delete(id int) error {
 }
 
 func (s *SQLiteStore) List() ([]Task, error) {
-	results, err := s.db.Query("SELECT id, title, status, priority, tags, created_at, completed_at FROM tasks")
+	results, err := s.db.Query("SELECT id, title, status, priority, tags, created_at, completed_at FROM tasks ORDER BY id")
 	if err != nil {
 		return nil, err
 	}
@@ -117,13 +117,13 @@ func (s *SQLiteStore) List() ([]Task, error) {
 	var tasks []Task
 	for results.Next() {
 		var t Task
-		var tagsStr string
+		var tagsStr sql.NullString
 		err := results.Scan(&t.ID, &t.Title, &t.Status, &t.Priority, &tagsStr, &t.CreatedAt, &t.CompletedAt)
 		if err != nil {
 			return nil, err
 		}
-		if tagsStr != "" {
-			t.Tags = strings.Split(tagsStr, ",")
+		if tagsStr.Valid && tagsStr.String != "" {
+			t.Tags = strings.Split(tagsStr.String, ",")
 		}
 		tasks = append(tasks, t)
 	}

@@ -50,7 +50,13 @@ func TestSQLiteStore_AddWithPriority(t *testing.T) {
 	}
 
 	// Verify it persisted correctly
-	tasks, _ := store.List()
+	tasks, err := store.List()
+	if err != nil {
+		t.Fatalf("unexpected error from List: %v", err)
+	}
+	if len(tasks) == 0 {
+		t.Fatal("expected at least 1 task, got 0")
+	}
 	if tasks[0].Priority != task.PriorityHigh {
 		t.Errorf("persisted priority: got %v, want PriorityHigh", tasks[0].Priority)
 	}
@@ -68,7 +74,13 @@ func TestSQLiteStore_AddWithTags(t *testing.T) {
 	}
 
 	// Verify tags persisted correctly
-	tasks, _ := store.List()
+	tasks, err := store.List()
+	if err != nil {
+		t.Fatalf("unexpected error from List: %v", err)
+	}
+	if len(tasks) == 0 {
+		t.Fatal("expected at least 1 task, got 0")
+	}
 	if len(tasks[0].Tags) != 2 {
 		t.Fatalf("persisted tags: got %d, want 2", len(tasks[0].Tags))
 	}
